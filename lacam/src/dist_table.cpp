@@ -22,9 +22,9 @@ void DistTable::setup(const Instance* ins)
   }
 }
 
-int DistTable::get(int i, int v_id)
+int DistTable::get(int i, int v_id)  // 获取agent i到v_id的最短距离
 {
-  if (table[i][v_id] < K) return table[i][v_id];
+  if (table[i][v_id] < K) return table[i][v_id];  // K是顶点数量，表示如果距离被计算过，则直接返回
 
   /*
    * BFS with lazy evaluation
@@ -32,7 +32,7 @@ int DistTable::get(int i, int v_id)
    * https://www.aaai.org/Papers/AIIDE/2005/AIIDE05-020.pdf
    */
 
-  while (!OPEN[i].empty()) {
+  while (!OPEN[i].empty()) {  // i表示agent的编号
     auto n = OPEN[i].front();
     OPEN[i].pop();
     const int d_n = table[i][n->id];

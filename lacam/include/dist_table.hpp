@@ -11,7 +11,7 @@ struct DistTable {
   const int K;  // number of vertices
   std::vector<std::vector<int> >
       table;  // distance table, index: agent-id & vertex-id
-  std::vector<std::queue<Vertex*> > OPEN;  // search queue
+  std::vector<std::queue<Vertex*> > OPEN;  // search queue，每一个agent有一个顶点队列
 
   int get(int i, int v_id);   // agent, vertex-id
   int get(int i, Vertex* v);  // agent, vertex

@@ -14,18 +14,18 @@ Constraint::Constraint(Constraint* parent, int i, Vertex* v)
 Constraint::~Constraint(){};
 
 Node::Node(Config _C, DistTable& D, Node* _parent)
-    : C(_C),
+    : C(_C),  // 每个代理的位置，初始化的时候是起点；也可以是每个代理的目标点
       parent(_parent),
       priorities(C.size(), 0),
       order(C.size(), 0),
       search_tree(std::queue<Constraint*>())
 {
   search_tree.push(new Constraint());
-  const auto N = C.size();
+  const auto N = C.size();  // 代理数量
 
   // set priorities
   if (parent == nullptr) {
-    // initialize
+    // initialize，优先级初始化，每个代理的优先级为其到达目标距离除以代理数量，距离越远则优先级越高
     for (size_t i = 0; i < N; ++i) priorities[i] = (float)D.get(i, C[i]) / N;
   } else {
     // dynamic priorities, akin to PIBT
@@ -82,7 +82,7 @@ Solution Planner::solve()
   std::vector<Constraint*> GC;  // garbage collection of constraints
 
   // insert initial node
-  auto S = new Node(ins->starts, D);
+  auto S = new Node(ins->starts, D);  // 高层节点
   OPEN.push(S);
   CLOSED[S->C] = S;
 
@@ -114,13 +114,13 @@ Solution Planner::solve()
     }
 
     // create successors at the low-level search
-    auto M = S->search_tree.front();
+    auto M = S->search_tree.front();  // M是Constraint类型的对象, S是高层节点Node
     GC.push_back(M);
     S->search_tree.pop();
     if (M->depth < N) {
-      auto i = S->order[M->depth];
-      auto C = S->C[i]->neighbor;
-      C.push_back(S->C[i]);
+      auto i = S->order[M->depth];  // i是代理顺序的id，即黑色块的id
+      auto C = S->C[i]->neighbor;  // C是邻居Vertex的集合
+      C.push_back(S->C[i]);  // 把当前节点也加入C
       if (MT != nullptr) std::shuffle(C.begin(), C.end(), *MT);  // randomize
       for (auto u : C) S->search_tree.push(new Constraint(M, i, u));
     }
@@ -171,11 +171,11 @@ bool Planner::get_new_config(Node* S, Constraint* M)
     }
 
     // set occupied now
-    a->v_now = S->C[a->id];
-    occupied_now[a->v_now->id] = a;
+    a->v_now = S->C[a->id];  // 从高层节点的Config中获取当前代理的位置
+    occupied_now[a->v_now->id] = a;  // occupied_now 给每个可以被占据的位置分配一个代理
   }
 
-  // add constraints
+  // add constraints，把约束树的状态添加到每个代理的v_next中，将occupied_next每个位置分配对应的这个要行走的代理
   for (auto k = 0; k < M->depth; ++k) {
     const auto i = M->who[k];        // agent
     const auto l = M->where[k]->id;  // loc
@@ -196,24 +196,24 @@ bool Planner::get_new_config(Node* S, Constraint* M)
   // perform PIBT
   for (auto k : S->order) {
     auto a = A[k];
-    if (a->v_next == nullptr && !funcPIBT(a)) return false;  // planning failure
+    if (a->v_next == nullptr && !funcPIBT(a)) return false;  // planning failure，如果a->v_next有值，才会进行PIBT规划。
   }
   return true;
 }
 
 bool Planner::funcPIBT(Agent* ai)
 {
-  const auto i = ai->id;
+  const auto i = ai->id;  // ai表示当前要规划路径的代理
   const auto K = ai->v_now->neighbor.size();
 
   // get candidates for next locations
   for (size_t k = 0; k < K; ++k) {
     auto u = ai->v_now->neighbor[k];
-    C_next[i][k] = u;
+    C_next[i][k] = u;  // C_next是备选的Vertex，将邻居加入
     if (MT != nullptr)
       tie_breakers[u->id] = get_random_float(MT);  // set tie-breaker
   }
-  C_next[i][K] = ai->v_now;
+  C_next[i][K] = ai->v_now;  // 备选的Vertex，把等待位置也加入。
 
   // sort, note: K + 1 is sufficient
   std::sort(C_next[i].begin(), C_next[i].begin() + K + 1,
@@ -228,16 +228,16 @@ bool Planner::funcPIBT(Agent* ai)
     // avoid vertex conflicts
     if (occupied_next[u->id] != nullptr) continue;
 
-    auto& ak = occupied_now[u->id];
+    auto& ak = occupied_now[u->id];  // ak是ai代理的目标顶点占据者
 
-    // avoid swap conflicts with constraints
+    // avoid swap conflicts with constraints，如果目标顶点被占据着，且互相穿过，那么就跳过
     if (ak != nullptr && ak->v_next == ai->v_now) continue;
 
     // reserve next location
     occupied_next[u->id] = ai;
     ai->v_next = u;
 
-    // empty or stay
+    // 目标顶点没有被占据（empty) or 目标顶点就是原地停留（stay），则认为规划成功
     if (ak == nullptr || u == ai->v_now) return true;
 
     // priority inheritance

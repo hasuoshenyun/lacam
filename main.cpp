@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
                                         : Instance(map_name, &MT, N);
   if (!ins.is_valid(1)) return 1;
 
+  std::cout << "caonima" << std::endl;
   // solve
   const auto deadline = Deadline(time_limit_sec * 1000);
   const auto solution = solve(ins, verbose - 1, &deadline, &MT);

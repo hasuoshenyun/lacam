@@ -43,7 +43,7 @@ struct Agent {
 using Agents = std::vector<Agent*>;
 
 // next location candidates, for saving memory allocation
-using Candidates = std::vector<std::array<Vertex*, 5> >;
+using Candidates = std::vector<std::array<Vertex*, 5> >;  // 邻居数量是5，包括原地等待
 
 struct Planner {
   const Instance* ins;

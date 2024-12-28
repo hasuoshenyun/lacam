@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(lldb) Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/main",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "-i", "assets/random-32-32-10-random-1.scen",
+                "-m", "assets/random-32-32-10.map",
+                "-N", "50",
+                "-v", "1",
+                "-t", "99999"
+            ],
+            // "stopAtEntry": true,  // 程序在入口处停下
+            // "externalConsole": false,
+            // "MIMode": "lldb",  // 使用 lldb 调试器
+            // "miDebuggerPath": "/opt/homebrew/opt/llvm/bin/lldb",  // lldb 路径
+            // "setupCommands": [
+            //     {
+            //         "description": "Enable pretty-printing for lldb",
+            //         "text": "settings set -- target.input-file-encoding utf-8",  // 为 lldb 启用支持的打印设置
+            //         "ignoreFailures": true
+            //     }
+            // ]
+        }
+    ]            
+
+}

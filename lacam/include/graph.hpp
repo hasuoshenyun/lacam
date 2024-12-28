@@ -5,7 +5,7 @@
 #include "utils.hpp"
 
 struct Vertex {
-  const int id;     // index for V in Graph
+  const int id;     // index for V in Graph，V是所有可以走的节点组成的向量
   const int index;  // index for U (width * y + x) in Graph
   std::vector<Vertex*> neighbor;
 

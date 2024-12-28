@@ -59,7 +59,7 @@ Instance::Instance(const std::string& map_filename, std::mt19937* MT,
   const auto K = G.size();
 
   // set starts
-  auto s_indexes = std::vector<int>(K);
+  auto s_indexes = std::vector<int>(K);  // K是G的顶点的数量
   std::iota(s_indexes.begin(), s_indexes.end(), 0);
   std::shuffle(s_indexes.begin(), s_indexes.end(), *MT);
   int i = 0;
